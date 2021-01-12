@@ -11,7 +11,7 @@ add_definitions(-DVERSION=${PROJECT_VERSION})
 
 set(SOURCES
     pie/device.cpp  pie/device.hpp
-    pie/types.hpp
+    pie/types.cpp   pie/types.hpp
     src/main.cpp
 )
 

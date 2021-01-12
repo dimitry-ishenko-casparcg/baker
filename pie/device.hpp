@@ -13,6 +13,8 @@
 
 #include <asio.hpp>
 #include <filesystem>
+#include <set>
+#include <tuple>
 
 namespace fs = std::filesystem;
 
@@ -32,17 +34,25 @@ public:
     auto rows() const { return rows_; }
 
 private:
-    asio::posix::stream_descriptor fd_;
+    fd fd_;
 
     byte uid_;
     byte columns_, rows_;
     void read_descriptor();
 
-    buffer data_;
-    void request_data();
+    data data_;
     void sched_read();
 
     void read_data(const asio::error_code&, std::size_t n);
+
+    using buttons = std::set<button>;
+
+    bool locked_ = false;
+    void toggle_locked();
+
+    buttons pressed_;
+
+    std::tuple<buttons, buttons> decode_buttons(byte[]);
 };
 
 ////////////////////////////////////////////////////////////////////////////////

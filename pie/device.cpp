@@ -8,6 +8,7 @@
 #include "device.hpp"
 
 #include <cerrno>
+#include <climits>
 #include <functional>
 #include <stdexcept>
 #include <system_error>
@@ -28,35 +29,34 @@ device::device(asio::io_context& io, const fs::path& path) :
     };
     fd_.assign(fd);
 
+    request_descriptor(fd_);
     read_descriptor();
 
-    request_data();
+    set_on(fd_, leds::none);
+
+    set_on(fd_, light::bank_1, all_rows);
+    set_on(fd_, light::bank_2, no_rows);
+
+    level(fd_, 255, 255);
+    period(fd_, 10);
+
+    request_data(fd_);
     sched_read();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void device::read_descriptor()
 {
-    request_descriptor rd;
-    asio::write(fd_, asio::buffer(&rd, sizeof(rd)));
-
-    buffer data;
+    pie::data data;
     auto n = fd_.read_some(asio::buffer(data));
     if(n < sizeof(descriptor_data)) throw std::runtime_error{
         "Short read - descriptor_data"
     };
-
     auto dd = data.as<descriptor_data>();
+
     uid_ = dd->uid;
     columns_ = dd->columns;
     rows_ = dd->rows;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-void device::request_data()
-{
-    generate_data gd;
-    asio::write(fd_, asio::buffer(&gd, sizeof(gd)));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -74,13 +74,84 @@ void device::read_data(const asio::error_code& ec, std::size_t n)
         if(n < sizeof(general_data)) throw std::runtime_error{
             "Short read - general_data"
         };
-
         auto gd = data_.as<general_data>();
 
-        //
+        if(gd->ps)
+        {
+            if(!pressed_.count(ps))
+            {
+                set(fd_, led::red, on);
+                pressed_.insert(ps);
+            }
+        }
+        else if(pressed_.count(ps))
+        {
+            pressed_.erase(ps);
+            set(fd_, led::red, off);
+
+            toggle_locked();
+        }
+
+        auto [ press, release ] = decode_buttons(gd->buttons);
+
+        for(auto b : press)
+        {
+            set(fd_, columns_, b, light::bank_1, off);
+            set(fd_, columns_, b, light::bank_2, on);
+
+            pressed_.insert(b);
+        }
+
+        for(auto b : release)
+        {
+            // when locked, leave the button red (bank_2)
+            if(!locked_)
+            {
+                set(fd_, columns_, b, light::bank_1, on);
+                set(fd_, columns_, b, light::bank_2, off);
+            }
+
+            pressed_.erase(b);
+        }
 
         sched_read();
     }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void device::toggle_locked()
+{
+    locked_ = !locked_;
+    set_on(fd_, light::bank_1, locked_ ? no_rows : all_rows);
+    set_on(fd_, light::bank_2, locked_ ? all_rows : no_rows);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+auto device::decode_buttons(byte buttons_[]) -> std::tuple<buttons, buttons>
+{
+    buttons press, release;
+
+    button b = 0;
+    for(auto col = 0; col < columns_; ++col)
+    {
+        auto on = buttons_[col];
+        for(auto row = 0; row < rows_; ++row)
+        {
+            if(on & 1)
+            {
+                // don't allow button presses when locked,
+                // only allow releases
+                if(!locked_ && !pressed_.count(b)) press.insert(b);
+            }
+            else if(pressed_.count(b)) release.insert(b);
+            on >>= 1;
+
+            ++b;
+        }
+        b += CHAR_BIT - rows_;
+    }
+
+    return { std::move(press), std::move(release) };
 }
 
 ////////////////////////////////////////////////////////////////////////////////
