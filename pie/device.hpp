@@ -13,6 +13,7 @@
 
 #include <asio.hpp>
 #include <filesystem>
+#include <map>
 #include <set>
 #include <tuple>
 
@@ -30,6 +31,9 @@ public:
 
     // mark button as double-press
     void double_press(button);
+
+    // add button to a group
+    void group(button, int id);
 
 private:
     fd fd_;
@@ -50,6 +54,9 @@ private:
 
     buttons double_press_;
     button pending_ = none; // pending double-press button (was pressed once)
+
+    std::map<button, int> group_;
+    std::map<int, button> active_;
 
     buttons pressed_;
 

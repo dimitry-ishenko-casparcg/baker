@@ -45,9 +45,15 @@ device::device(asio::io_context& io, const fs::path& path) :
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void device::double_press(button b)
+void device::double_press(button btn)
 {
-    double_press_.insert(b);
+    double_press_.insert(btn);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void device::group(button btn, int id)
+{
+    group_[btn] = id;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -94,17 +100,38 @@ void device::read_data(const asio::error_code& ec, std::size_t n)
 
         auto [ pressed, released ] = decode_buttons(gd->buttons);
 
-        for(auto b : pressed)
+        for(auto btn : pressed)
         {
-            // reset pending double-press button if a different one was pressed
-            if(b != pending_ && pending_ != none) un_pend();
+            // reset pending double-press button
+            // if a different one was pressed
+            if(btn != pending_ && pending_ != none) un_pend();
 
-            if(b == pending_ || !double_press_.count(b))
-                press(b);
-            else pend(b);
+            if(btn == pending_ || !double_press_.count(btn))
+            {
+                // if this button is part of a group
+                if(auto gi = group_.find(btn); gi != group_.end())
+                {
+                    auto grp = gi->second;
+
+                    // find which button is currently active in this group
+                    // and release it
+                    if(auto bi = active_.find(grp); bi != active_.end()) release(bi->second);
+
+                    active_[grp] = btn;
+                }
+
+                press(btn);
+            }
+            else pend(btn);
         }
 
-        for(auto b : released) release(b);
+        for(auto btn : released)
+        {
+            // only release un-groupped buttons
+            // group buttons are released when another one
+            // in the group is pressed
+            if(group_.find(btn) == group_.end()) release(btn);
+        }
 
         sched_read();
     }
@@ -114,8 +141,22 @@ void device::read_data(const asio::error_code& ec, std::size_t n)
 void device::toggle_locked()
 {
     locked_ = !locked_;
-    set_on(fd_, light::bank_1, locked_ ? no_rows : all_rows);
-    set_on(fd_, light::bank_2, locked_ ? all_rows : no_rows);
+    if(locked_)
+    {
+        set_on(fd_, light::bank_1, no_rows);
+        set_on(fd_, light::bank_2, all_rows);
+    }
+    else
+    {
+        set_on(fd_, light::bank_1, all_rows);
+        set_on(fd_, light::bank_2, no_rows);
+
+        for(auto [_, btn] : active_)
+        {
+            set(fd_, columns_, btn, light::bank_1, off);
+            set(fd_, columns_, btn, light::bank_2, on);
+        }
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -163,34 +204,34 @@ void device::un_pend()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void device::press(button b)
+void device::press(button btn)
 {
-    if(b != ps)
+    if(btn != ps)
     {
-        set(fd_, columns_, b, light::bank_1, off);
-        set(fd_, columns_, b, light::bank_2, on);
+        set(fd_, columns_, btn, light::bank_1, off);
+        set(fd_, columns_, btn, light::bank_2, on);
     }
     else set(fd_, led::red, on);
 
-    pressed_.insert(b);
+    pressed_.insert(btn);
     pending_ = none;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void device::release(button b)
+void device::release(button btn)
 {
-    if(b != ps)
+    if(btn != ps)
     {
         // when locked, leave the button red (bank_2)
         if(!locked_)
         {
-            set(fd_, columns_, b, light::bank_1, on);
-            set(fd_, columns_, b, light::bank_2, off);
+            set(fd_, columns_, btn, light::bank_1, on);
+            set(fd_, columns_, btn, light::bank_2, off);
         }
     }
     else set(fd_, led::red, off);
 
-    pressed_.erase(b);
+    pressed_.erase(btn);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
