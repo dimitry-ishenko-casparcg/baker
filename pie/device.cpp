@@ -82,21 +82,15 @@ void device::read_data(const asio::error_code& ec, std::size_t n)
         };
         auto gd = data_.as<general_data>();
 
-        if(gd->ps)
+        if(!gd->ps)
         {
-            if(!pressed_.count(ps))
+            if(pressed_.count(ps))
             {
-                set(fd_, led::red, on);
-                pressed_.insert(ps);
+                release(ps);
+                toggle_locked();
             }
         }
-        else if(pressed_.count(ps))
-        {
-            pressed_.erase(ps);
-            set(fd_, led::red, off);
-
-            toggle_locked();
-        }
+        else if(!pressed_.count(ps)) press(ps);
 
         auto [ pressed, released ] = decode_buttons(gd->buttons);
 
@@ -171,8 +165,12 @@ void device::un_pend()
 ////////////////////////////////////////////////////////////////////////////////
 void device::press(button b)
 {
-    set(fd_, columns_, b, light::bank_1, off);
-    set(fd_, columns_, b, light::bank_2, on);
+    if(b != ps)
+    {
+        set(fd_, columns_, b, light::bank_1, off);
+        set(fd_, columns_, b, light::bank_2, on);
+    }
+    else set(fd_, led::red, on);
 
     pressed_.insert(b);
     pending_ = none;
@@ -181,12 +179,16 @@ void device::press(button b)
 ////////////////////////////////////////////////////////////////////////////////
 void device::release(button b)
 {
-    // when locked, leave the button red (bank_2)
-    if(!locked_)
+    if(b != ps)
     {
-        set(fd_, columns_, b, light::bank_1, on);
-        set(fd_, columns_, b, light::bank_2, off);
+        // when locked, leave the button red (bank_2)
+        if(!locked_)
+        {
+            set(fd_, columns_, b, light::bank_1, on);
+            set(fd_, columns_, b, light::bank_2, off);
+        }
     }
+    else set(fd_, led::red, off);
 
     pressed_.erase(b);
 }
