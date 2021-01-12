@@ -28,11 +28,6 @@ class device
 public:
     explicit device(asio::io_context&, const fs::path&);
 
-    auto uid() const { return uid_; }
-
-    auto columns() const { return columns_; }
-    auto rows() const { return rows_; }
-
     void double_press(button b) { double_press_.insert(b); }
 
 private:
