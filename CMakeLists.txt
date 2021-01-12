@@ -9,14 +9,18 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 add_definitions(-DASIO_STANDALONE)
 add_definitions(-DVERSION=${PROJECT_VERSION})
 
-set(SOURCES src/main.cpp)
+set(SOURCES
+    pie/device.cpp  pie/device.hpp
+    pie/types.hpp
+    src/main.cpp
+)
 
 include(GNUInstallDirs)
 
 ########################
 # executable
 add_executable(${PROJECT_NAME} ${HEADERS} ${SOURCES})
-#target_link_libraries(${PROJECT_NAME} Qt5::Core Qt5::Widgets)
+target_link_libraries(${PROJECT_NAME} pthread)
 
 install(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_BINDIR})
 
