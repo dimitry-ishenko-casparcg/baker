@@ -33,6 +33,8 @@ public:
     auto columns() const { return columns_; }
     auto rows() const { return rows_; }
 
+    void double_press(button b) { double_press_.insert(b); }
+
 private:
     fd fd_;
 
@@ -49,6 +51,9 @@ private:
 
     bool locked_ = false;
     void toggle_locked();
+
+    buttons double_press_;
+    button pending_ = none; // pending double-press button (was pressed once)
 
     buttons pressed_;
 

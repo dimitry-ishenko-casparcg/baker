@@ -96,10 +96,28 @@ void device::read_data(const asio::error_code& ec, std::size_t n)
 
         for(auto b : press)
         {
-            set(fd_, columns_, b, light::bank_1, off);
-            set(fd_, columns_, b, light::bank_2, on);
+            // reset pending double-press button if a different one was pressed
+            if(b != pending_ && pending_ != none)
+            {
+                set(fd_, columns_, pending_, light::bank_1, on);
+                set(fd_, columns_, pending_, light::bank_2, off);
+                pending_ = none;
+            }
 
-            pressed_.insert(b);
+            if(b == pending_ || !double_press_.count(b))
+            {
+                set(fd_, columns_, b, light::bank_1, off);
+                set(fd_, columns_, b, light::bank_2, on);
+
+                pressed_.insert(b);
+                pending_ = none;
+            }
+            else
+            {
+                set(fd_, columns_, b, light::bank_1, off);
+                set(fd_, columns_, b, light::bank_2, flash);
+                pending_ = b;
+            }
         }
 
         for(auto b : release)
