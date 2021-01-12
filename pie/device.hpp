@@ -42,7 +42,7 @@ private:
     byte columns_, rows_;
     void read_descriptor();
 
-    data data_;
+    recv data_;
     void sched_read();
 
     void read_data(const asio::error_code&, std::size_t n);

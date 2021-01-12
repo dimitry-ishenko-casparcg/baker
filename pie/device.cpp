@@ -47,7 +47,7 @@ device::device(asio::io_context& io, const fs::path& path) :
 ////////////////////////////////////////////////////////////////////////////////
 void device::read_descriptor()
 {
-    pie::data data;
+    recv data;
     auto n = fd_.read_some(asio::buffer(data));
     if(n < sizeof(descriptor_data)) throw std::runtime_error{
         "Short read - descriptor_data"

@@ -9,7 +9,9 @@
 #define PIE_TYPES_HPP
 
 ////////////////////////////////////////////////////////////////////////////////
+#include <array>
 #include <asio.hpp>
+#include <climits>
 #include <cstdint>
 #include <vector>
 
@@ -57,18 +59,13 @@ enum rows : byte
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-class data : public std::vector<byte>
+struct recv : std::array<byte, 42>
 {
-    using base = std::vector<byte>;
-
-public:
-    explicit data(std::size_t n = 42) : base(n, 0) { }
+    template<typename T>
+    T* as() { return reinterpret_cast<T*>(data()); }
 
     template<typename T>
-    T* as() { return reinterpret_cast<T*>(base::data()); }
-
-    template<typename T>
-    const T* as() const { return reinterpret_cast<T*>(base::data()); }
+    const T* as() const { return reinterpret_cast<const T*>(data()); }
 };
 
 ////////////////////////////////////////////////////////////////////////////////

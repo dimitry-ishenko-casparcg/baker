@@ -6,142 +6,87 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 #include "types.hpp"
-#include <climits>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace pie
 {
 
 ////////////////////////////////////////////////////////////////////////////////
-template<typename T>
-auto buffer_from(T& v) { return asio::buffer(&v, sizeof(v)); }
-
-////////////////////////////////////////////////////////////////////////////////
-#pragma pack(push, 1)
-
-template<byte Cmd>
-struct send_cmd_base
-{
-    const byte id = 0;
-    const byte cmd = Cmd;
-};
-
-constexpr auto pad_size = 36 - sizeof(send_cmd_base<0>);
+using send = std::array<byte, 36>;
 
 ////////////////////////////////////////////////////////////////////////////////
 void request_data(pie::fd& fd)
 {
-    struct : send_cmd_base<177>
-    {
-        const byte _pad[pad_size] { };
-    }
-    data;
-
-    asio::write(fd, buffer_from(data));
+    send data{ };
+    data[1] = 177;
+    asio::write(fd, asio::buffer(data));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void set(pie::fd& fd, led::color c, state s)
 {
-    struct : send_cmd_base<179>
-    {
-        led::color color;
-        pie::state state;
-        const byte _pad[pad_size - 2] { };
-    }
-    data;
-    data.color = c; data.state = s;
-
-    asio::write(fd, buffer_from(data));
+    send data{ };
+    data[1] = 179;
+    data[2] = c;
+    data[3] = s;
+    asio::write(fd, asio::buffer(data));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void period(pie::fd& fd, byte period)
 {
-    struct : send_cmd_base<180>
-    {
-        byte period;
-        const byte _pad[pad_size - 1] { };
-    }
-    data;
-    data.period = period;
-
-    asio::write(fd, buffer_from(data));
+    send data{ };
+    data[1] = 180;
+    data[2] = period;
+    asio::write(fd, asio::buffer(data));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void set(fd& fd, byte columns, button b, light::bank k, state s)
 {
-    struct : send_cmd_base<181>
-    {
-        byte index;
-        pie::state state;
-        const byte _pad[pad_size - 2] { };
-    }
-    data;
-    data.index = b + (k * columns * CHAR_BIT);
-    data.state = s;
-
-    asio::write(fd, buffer_from(data));
+    send data{ };
+    data[1] = 181;
+    data[2] = b + (k * columns * CHAR_BIT);
+    data[3] = s;
+    asio::write(fd, asio::buffer(data));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void set_on(pie::fd& fd, light::bank k, rows rs)
 {
-    struct : send_cmd_base<182>
-    {
-        light::bank bank;
-        pie::rows rows;
-        const byte _pad[pad_size - 2] { };
-    }
-    data;
-    data.bank = k; data.rows = rs;
-
-    asio::write(fd, buffer_from(data));
+    send data{ };
+    data[1] = 182;
+    data[2] = k;
+    data[3] = rs;
+    asio::write(fd, asio::buffer(data));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void set_on(pie::fd& fd, leds::color c)
 {
-    struct : send_cmd_base<186>
-    {
-        leds::color color;
-        const byte _pad[pad_size - 1] { };
-    }
-    data;
-    data.color = c;
-
-    asio::write(fd, buffer_from(data));
+    send data{ };
+    data[1] = 186;
+    data[2] = c;
+    asio::write(fd, asio::buffer(data));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void level(pie::fd& fd, byte bank_1, byte bank_2)
 {
-    struct : send_cmd_base<187>
-    {
-        byte bank_1;
-        byte bank_2;
-        const byte _pad[pad_size - 2] { };
-    }
-    data;
-    data.bank_1 = bank_1; data.bank_2 = bank_2;
-
-    asio::write(fd, buffer_from(data));
+    send data{ };
+    data[1] = 187;
+    data[2] = bank_1;
+    data[3] = bank_2;
+    asio::write(fd, asio::buffer(data));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void request_descriptor(pie::fd& fd)
 {
-    struct : send_cmd_base<214>
-    {
-        const byte _pad[pad_size] { };
-    }
-    data;
-
-    asio::write(fd, buffer_from(data));
+    send data{ };
+    data[1] = 214;
+    asio::write(fd, asio::buffer(data));
 }
-
-#pragma pack(pop)
 
 ////////////////////////////////////////////////////////////////////////////////
 }
