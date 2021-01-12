@@ -28,7 +28,8 @@ class device
 public:
     explicit device(asio::io_context&, const fs::path&);
 
-    void double_press(button b) { double_press_.insert(b); }
+    // mark button as double-press
+    void double_press(button);
 
 private:
     fd fd_;
@@ -53,6 +54,12 @@ private:
     buttons pressed_;
 
     std::tuple<buttons, buttons> decode_buttons(byte[]);
+
+    void pend(button);
+    void un_pend();
+
+    void press(button);
+    void release(button);
 };
 
 ////////////////////////////////////////////////////////////////////////////////

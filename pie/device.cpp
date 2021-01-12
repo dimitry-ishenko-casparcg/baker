@@ -45,6 +45,12 @@ device::device(asio::io_context& io, const fs::path& path) :
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+void device::double_press(button b)
+{
+    double_press_.insert(b);
+}
+
+////////////////////////////////////////////////////////////////////////////////
 void device::read_descriptor()
 {
     recv data;
@@ -92,45 +98,19 @@ void device::read_data(const asio::error_code& ec, std::size_t n)
             toggle_locked();
         }
 
-        auto [ press, release ] = decode_buttons(gd->buttons);
+        auto [ pressed, released ] = decode_buttons(gd->buttons);
 
-        for(auto b : press)
+        for(auto b : pressed)
         {
             // reset pending double-press button if a different one was pressed
-            if(b != pending_ && pending_ != none)
-            {
-                set(fd_, columns_, pending_, light::bank_1, on);
-                set(fd_, columns_, pending_, light::bank_2, off);
-                pending_ = none;
-            }
+            if(b != pending_ && pending_ != none) un_pend();
 
             if(b == pending_ || !double_press_.count(b))
-            {
-                set(fd_, columns_, b, light::bank_1, off);
-                set(fd_, columns_, b, light::bank_2, on);
-
-                pressed_.insert(b);
-                pending_ = none;
-            }
-            else
-            {
-                set(fd_, columns_, b, light::bank_1, off);
-                set(fd_, columns_, b, light::bank_2, flash);
-                pending_ = b;
-            }
+                press(b);
+            else pend(b);
         }
 
-        for(auto b : release)
-        {
-            // when locked, leave the button red (bank_2)
-            if(!locked_)
-            {
-                set(fd_, columns_, b, light::bank_1, on);
-                set(fd_, columns_, b, light::bank_2, off);
-            }
-
-            pressed_.erase(b);
-        }
+        for(auto b : released) release(b);
 
         sched_read();
     }
@@ -147,7 +127,7 @@ void device::toggle_locked()
 ////////////////////////////////////////////////////////////////////////////////
 auto device::decode_buttons(byte buttons_[]) -> std::tuple<buttons, buttons>
 {
-    buttons press, release;
+    buttons pressed, released;
 
     button b = 0;
     for(auto col = 0; col < columns_; ++col)
@@ -159,9 +139,9 @@ auto device::decode_buttons(byte buttons_[]) -> std::tuple<buttons, buttons>
             {
                 // don't allow button presses when locked,
                 // only allow releases
-                if(!locked_ && !pressed_.count(b)) press.insert(b);
+                if(!locked_ && !pressed_.count(b)) pressed.insert(b);
             }
-            else if(pressed_.count(b)) release.insert(b);
+            else if(pressed_.count(b)) released.insert(b);
             on >>= 1;
 
             ++b;
@@ -169,7 +149,46 @@ auto device::decode_buttons(byte buttons_[]) -> std::tuple<buttons, buttons>
         b += CHAR_BIT - rows_;
     }
 
-    return { std::move(press), std::move(release) };
+    return { std::move(pressed), std::move(released) };
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void device::pend(button b)
+{
+    set(fd_, columns_, b, light::bank_1, off);
+    set(fd_, columns_, b, light::bank_2, flash);
+    pending_ = b;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void device::un_pend()
+{
+    set(fd_, columns_, pending_, light::bank_1, on);
+    set(fd_, columns_, pending_, light::bank_2, off);
+    pending_ = none;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void device::press(button b)
+{
+    set(fd_, columns_, b, light::bank_1, off);
+    set(fd_, columns_, b, light::bank_2, on);
+
+    pressed_.insert(b);
+    pending_ = none;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void device::release(button b)
+{
+    // when locked, leave the button red (bank_2)
+    if(!locked_)
+    {
+        set(fd_, columns_, b, light::bank_1, on);
+        set(fd_, columns_, b, light::bank_2, off);
+    }
+
+    pressed_.erase(b);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
