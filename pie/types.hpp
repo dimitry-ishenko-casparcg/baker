@@ -106,13 +106,28 @@ struct descriptor_data
 ////////////////////////////////////////////////////////////////////////////////
 using fd = asio::posix::stream_descriptor;
 
+// request current state data
 void request_data(fd&);
-void set(fd&, led::color, state);
+
+// set PS LED state
+void led_state(fd&, led::color, state);
+
+// set backlight/LED flash period
 void period(fd&, byte);
-void set(fd&, byte columns, button, light::bank, state);
-void set_on(fd&, light::bank, rows);
-void set_on(fd&, leds::color);
+
+// set backlight state
+void light_state(fd&, byte columns, button, light::bank, state);
+
+// turn on/off rows of backlights
+void light_on(fd&, light::bank, rows);
+
+// turn on/off LEDs
+void leds_on(fd&, leds::color);
+
+// set backlight intensity
 void level(fd&, byte bank_1, byte bank_2);
+
+// request descriptor data
 void request_descriptor(fd&);
 
 ////////////////////////////////////////////////////////////////////////////////

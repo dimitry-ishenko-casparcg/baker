@@ -23,7 +23,7 @@ void request_data(pie::fd& fd)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void set(pie::fd& fd, led::color c, state s)
+void led_state(pie::fd& fd, led::color c, state s)
 {
     send data{ };
     data[1] = 179;
@@ -42,7 +42,7 @@ void period(pie::fd& fd, byte period)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void set(fd& fd, byte columns, button b, light::bank k, state s)
+void light_state(fd& fd, byte columns, button b, light::bank k, state s)
 {
     send data{ };
     data[1] = 181;
@@ -52,7 +52,7 @@ void set(fd& fd, byte columns, button b, light::bank k, state s)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void set_on(pie::fd& fd, light::bank k, rows rs)
+void light_on(pie::fd& fd, light::bank k, rows rs)
 {
     send data{ };
     data[1] = 182;
@@ -62,7 +62,7 @@ void set_on(pie::fd& fd, light::bank k, rows rs)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void set_on(pie::fd& fd, leds::color c)
+void leds_on(pie::fd& fd, leds::color c)
 {
     send data{ };
     data[1] = 186;

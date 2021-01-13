@@ -32,10 +32,10 @@ device::device(asio::io_context& io, const fs::path& path) :
     request_descriptor(fd_);
     read_descriptor();
 
-    set_on(fd_, leds::none);
+    leds_on(fd_, leds::none);
 
-    set_on(fd_, light::bank_1, all_rows);
-    set_on(fd_, light::bank_2, no_rows);
+    light_on(fd_, light::bank_1, all_rows);
+    light_on(fd_, light::bank_2, no_rows);
 
     level(fd_, 255, 255);
     period(fd_, 10);
@@ -143,18 +143,18 @@ void device::toggle_locked()
     locked_ = !locked_;
     if(locked_)
     {
-        set_on(fd_, light::bank_1, no_rows);
-        set_on(fd_, light::bank_2, all_rows);
+        light_on(fd_, light::bank_1, no_rows);
+        light_on(fd_, light::bank_2, all_rows);
     }
     else
     {
-        set_on(fd_, light::bank_1, all_rows);
-        set_on(fd_, light::bank_2, no_rows);
+        light_on(fd_, light::bank_1, all_rows);
+        light_on(fd_, light::bank_2, no_rows);
 
         for(auto [_, btn] : active_)
         {
-            set(fd_, columns_, btn, light::bank_1, off);
-            set(fd_, columns_, btn, light::bank_2, on);
+            light_state(fd_, columns_, btn, light::bank_1, off);
+            light_state(fd_, columns_, btn, light::bank_2, on);
         }
     }
 }
@@ -190,16 +190,16 @@ auto device::decode_buttons(byte buttons_[]) -> std::tuple<buttons, buttons>
 ////////////////////////////////////////////////////////////////////////////////
 void device::pend(button b)
 {
-    set(fd_, columns_, b, light::bank_1, off);
-    set(fd_, columns_, b, light::bank_2, flash);
+    light_state(fd_, columns_, b, light::bank_1, off);
+    light_state(fd_, columns_, b, light::bank_2, flash);
     pending_ = b;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void device::un_pend()
 {
-    set(fd_, columns_, pending_, light::bank_1, on);
-    set(fd_, columns_, pending_, light::bank_2, off);
+    light_state(fd_, columns_, pending_, light::bank_1, on);
+    light_state(fd_, columns_, pending_, light::bank_2, off);
     pending_ = none;
 }
 
@@ -208,10 +208,10 @@ void device::press(button btn)
 {
     if(btn != ps)
     {
-        set(fd_, columns_, btn, light::bank_1, off);
-        set(fd_, columns_, btn, light::bank_2, on);
+        light_state(fd_, columns_, btn, light::bank_1, off);
+        light_state(fd_, columns_, btn, light::bank_2, on);
     }
-    else set(fd_, led::red, on);
+    else led_state(fd_, led::red, on);
 
     pressed_.insert(btn);
     pending_ = none;
@@ -225,11 +225,11 @@ void device::release(button btn)
         // when locked, leave the button red (bank_2)
         if(!locked_)
         {
-            set(fd_, columns_, btn, light::bank_1, on);
-            set(fd_, columns_, btn, light::bank_2, off);
+            light_state(fd_, columns_, btn, light::bank_1, on);
+            light_state(fd_, columns_, btn, light::bank_2, off);
         }
     }
-    else set(fd_, led::red, off);
+    else led_state(fd_, led::red, off);
 
     pressed_.erase(btn);
 }
