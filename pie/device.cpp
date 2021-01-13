@@ -29,7 +29,16 @@ device::device(asio::io_context& io, const fs::path& path) :
     fd_.assign(fd);
 
     request_descriptor(fd_);
-    read_descriptor();
+
+    recv data;
+    auto n = fd_.read_some(asio::buffer(data));
+    if(n < sizeof(descriptor_data)) throw std::runtime_error{
+        "Short read - descriptor_data"
+    };
+
+    auto dd = data.as<descriptor_data>();
+    columns_ = dd->columns;
+    rows_ = dd->rows;
 
     leds_on(fd_, leds::none);
 
@@ -39,23 +48,7 @@ device::device(asio::io_context& io, const fs::path& path) :
     level(fd_, 255, 255);
     period(fd_, 10);
 
-    request_data(fd_);
     sched_read();
-}
-
-////////////////////////////////////////////////////////////////////////////////
-void device::read_descriptor()
-{
-    recv data;
-    auto n = fd_.read_some(asio::buffer(data));
-    if(n < sizeof(descriptor_data)) throw std::runtime_error{
-        "Short read - descriptor_data"
-    };
-    auto dd = data.as<descriptor_data>();
-
-    uid_ = dd->uid;
-    columns_ = dd->columns;
-    rows_ = dd->rows;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

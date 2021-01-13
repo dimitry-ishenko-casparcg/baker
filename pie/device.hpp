@@ -49,10 +49,7 @@ public:
 
 private:
     fd fd_;
-
-    byte uid_;
     byte columns_, rows_;
-    void read_descriptor();
 
     recv data_;
     void sched_read();
