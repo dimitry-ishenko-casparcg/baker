@@ -8,12 +8,12 @@
 #include "device.hpp"
 
 #include <cerrno>
-#include <climits>
+#include <climits> // CHAR_BIT
 #include <functional>
 #include <stdexcept>
 #include <system_error>
 
-#include <fcntl.h>
+#include <fcntl.h> // open
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace pie
@@ -128,8 +128,7 @@ void device::read_data(const asio::error_code& ec, std::size_t n)
         for(auto btn : released)
         {
             // only release un-groupped buttons
-            // group buttons are released when another one
-            // in the group is pressed
+            // group buttons are released when another in the same group is pressed
             if(group_.find(btn) == group_.end()) release(btn);
         }
 
@@ -151,6 +150,7 @@ void device::toggle_locked()
         light_on(fd_, light::bank_1, all_rows);
         light_on(fd_, light::bank_2, no_rows);
 
+        // light up all active group buttons
         for(auto [_, btn] : active_)
         {
             light_state(fd_, columns_, btn, light::bank_1, off);
