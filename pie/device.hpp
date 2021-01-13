@@ -26,6 +26,8 @@ namespace pie
 {
 
 ////////////////////////////////////////////////////////////////////////////////
+using button_list = std::initializer_list<button>;
+
 using callback = std::function<void (button)>;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -35,12 +37,12 @@ public:
     explicit device(asio::io_context&, const fs::path&);
 
     // mark button(s) as double-press
-    void double_press(button);
-    void double_press(std::initializer_list<button>);
+    void double_press(button b) { double_press_.insert(b); }
+    void double_press(button_list l) { for(auto b : l) double_press(b); }
 
     // add button(s) to a group
-    void group(button, int id);
-    void group(std::initializer_list<button>, int id);
+    void group(button b, int id) { group_[b] = id; }
+    void group(button_list l, int id) { for(auto b : l) group(b, id); }
 
     void pressed_callback(callback cb) { pcall_ = std::move(cb); }
     void released_callback(callback cb) { rcall_ = std::move(cb); }
