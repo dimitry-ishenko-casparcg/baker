@@ -13,6 +13,7 @@
 
 #include <asio.hpp>
 #include <filesystem>
+#include <functional>
 #include <map>
 #include <set>
 #include <tuple>
@@ -22,6 +23,9 @@ namespace fs = std::filesystem;
 ////////////////////////////////////////////////////////////////////////////////
 namespace pie
 {
+
+////////////////////////////////////////////////////////////////////////////////
+using callback = std::function<void (button)>;
 
 ////////////////////////////////////////////////////////////////////////////////
 class device
@@ -34,6 +38,9 @@ public:
 
     // add button to a group
     void group(button, int id);
+
+    void pressed_callback(callback cb) { pcall_ = std::move(cb); }
+    void released_callback(callback cb) { rcall_ = std::move(cb); }
 
 private:
     fd fd_;
@@ -67,6 +74,8 @@ private:
 
     void press(button);
     void release(button);
+
+    callback pcall_, rcall_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -9,7 +9,6 @@
 
 #include <cerrno>
 #include <climits> // CHAR_BIT
-#include <functional>
 #include <stdexcept>
 #include <system_error>
 
@@ -150,7 +149,7 @@ void device::toggle_locked()
         light_on(fd_, light::bank_1, all_rows);
         light_on(fd_, light::bank_2, no_rows);
 
-        // light up all active group buttons
+        // light up active group buttons
         for(auto [_, btn] : active_)
         {
             light_state(fd_, columns_, btn, light::bank_1, off);
@@ -215,6 +214,8 @@ void device::press(button btn)
 
     pressed_.insert(btn);
     pending_ = none;
+
+    if(pcall_) pcall_(btn);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -232,6 +233,8 @@ void device::release(button btn)
     else led_state(fd_, led::red, off);
 
     pressed_.erase(btn);
+
+    if(rcall_) rcall_(btn);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
