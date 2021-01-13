@@ -42,11 +42,11 @@ void period(pie::fd& fd, byte period)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void light_state(fd& fd, byte columns, button b, light::bank k, state s)
+void light_state(fd& fd, byte columns, index n, light::bank k, state s)
 {
     send data{ };
     data[1] = 181;
-    data[2] = b + (k * columns * CHAR_BIT);
+    data[2] = n + (k * columns * CHAR_BIT);
     data[3] = s;
     asio::write(fd, asio::buffer(data));
 }

@@ -24,9 +24,9 @@ using byte = std::uint8_t;
 using word = std::uint16_t;
 
 ////////////////////////////////////////////////////////////////////////////////
-using button = int;
-constexpr button ps = -1;
-constexpr button none = -2;
+using index = byte;
+constexpr index ps = -1;
+constexpr index none = -2;
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace leds
@@ -116,12 +116,12 @@ void led_state(fd&, led::color, state);
 void period(fd&, byte);
 
 // set backlight state
-void light_state(fd&, byte columns, button, light::bank, state);
+void light_state(fd&, byte columns, index, light::bank, state);
 
 // turn on/off rows of backlights
 void light_on(fd&, light::bank, rows);
 
-// turn on/off LEDs
+// turn on/off PS LEDs
 void leds_on(fd&, leds::color);
 
 // set backlight intensity
