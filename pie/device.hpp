@@ -14,6 +14,7 @@
 #include <asio.hpp>
 #include <filesystem>
 #include <functional>
+#include <initializer_list>
 #include <map>
 #include <set>
 #include <tuple>
@@ -33,11 +34,13 @@ class device
 public:
     explicit device(asio::io_context&, const fs::path&);
 
-    // mark button as double-press
+    // mark button(s) as double-press
     void double_press(button);
+    void double_press(std::initializer_list<button>);
 
-    // add button to a group
+    // add button(s) to a group
     void group(button, int id);
+    void group(std::initializer_list<button>, int id);
 
     void pressed_callback(callback cb) { pcall_ = std::move(cb); }
     void released_callback(callback cb) { rcall_ = std::move(cb); }
