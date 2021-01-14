@@ -13,6 +13,7 @@ set(SOURCES
     pie/device.cpp  pie/device.hpp
     pie/types.cpp   pie/types.hpp
     src/main.cpp
+    src/util.cpp    src/util.hpp
 )
 
 include(GNUInstallDirs)
