@@ -20,7 +20,7 @@ namespace pie
 
 ////////////////////////////////////////////////////////////////////////////////
 device::device(asio::io_context& io, const fs::path& path) :
-    fd_(io)
+    fd_{ io }
 {
     auto fd = ::open(path.c_str(), O_RDWR);
     if(fd == -1) throw std::system_error{

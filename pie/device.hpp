@@ -37,16 +37,16 @@ public:
     explicit device(asio::io_context&, const fs::path&);
 
     // mark button(s) as double-press
-    void double_press(index idx) { buttons_.at(idx).double_press = true; }
-    void double_press(index_list il) { for(auto idx : il) double_press(idx); }
+    void set_double_press(index idx) { buttons_.at(idx).double_press = true; }
+    void set_double_press(index_list il) { for(auto idx : il) set_double_press(idx); }
 
     // mark button(s) as toggle
-    void toggle(index idx) { buttons_.at(idx).toggle = true; }
-    void toggle(index_list il) { for(auto idx : il) toggle(idx); }
+    void set_toggle(index idx) { buttons_.at(idx).toggle = true; }
+    void set_toggle(index_list il) { for(auto idx : il) set_toggle(idx); }
 
     // add button(s) to a group
-    void group(index idx, int id) { buttons_.at(idx).group = id; }
-    void group(index_list il, int id) { for(auto idx : il) group(idx, id); }
+    void set_group(index idx, int id) { buttons_.at(idx).group = id; }
+    void set_group(index_list il, int id) { for(auto idx : il) set_group(idx, id); }
 
     void pressed_callback(callback cb) { pcall_ = std::move(cb); }
     void released_callback(callback cb) { rcall_ = std::move(cb); }
