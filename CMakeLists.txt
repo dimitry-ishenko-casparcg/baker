@@ -10,6 +10,7 @@ add_definitions(-DASIO_STANDALONE)
 add_definitions(-DVERSION="${PROJECT_VERSION}")
 
 set(SOURCES
+    pgm/args.cpp    pgm/args.hpp
     pie/device.cpp  pie/device.hpp
     pie/types.cpp   pie/types.hpp
     src/main.cpp
