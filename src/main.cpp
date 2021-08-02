@@ -14,7 +14,6 @@
 #include <filesystem>
 #include <iostream>
 
-using namespace asio::ip;
 namespace fs = std::filesystem;
 
 #if !defined(VERSION)
@@ -25,7 +24,7 @@ namespace fs = std::filesystem;
 auto to_address(const std::string& s)
 {
     asio::error_code ec;
-    auto address = make_address(s, ec);
+    auto address = asio::ip::make_address(s, ec);
 
     if(!ec) return address;
     else throw pgm::invalid_argument{ "Invalid IP address", s };
@@ -48,14 +47,18 @@ try
 {
     auto name{ fs::path(argv[0]).filename() };
 
+    std::string def_address = "127.0.0.1";
+    std::string def_port = "6260";
+
     pgm::args args
     {
         { "-a", "--address", "addr", "Specify OSC server IP address to send messages to.\n"
-                                     "Default: 127.0.0.1"               },
-        { "-p", "--port", "N",       "Specify OSC server port number. Default: 6260." },
+                                     "Default: " + def_address + "."    },
+        { "-p", "--port", "N",       "Specify OSC server port number. Default: " + def_port + "." },
         { "-h", "--help",            "Print this help screen and exit." },
         { "-v", "--version",         "Show version number and exit."    },
-        { "path",                    "Path to Logitech R800 device."    },
+
+        { "path",                    "Path to an X-Keys device."        },
     };
 
     // delay exception handling to process --help and --version
@@ -79,14 +82,14 @@ try
     {
         fs::path path{ args["path"].value() };
 
-        udp::endpoint ep{
-            to_address( args["--address"].value_or("127.0.0.1") ),
-            to_port( args["--port"].value_or("6260") )
+        asio::ip::udp::endpoint ep{
+            to_address(args["--address"].value_or(def_address)),
+            to_port(args["--port"].value_or(def_port))
         };
 
         asio::io_context io;
-        udp::socket socket{ io };
-        socket.open(udp::v4());
+        asio::ip::udp::socket socket{ io };
+        socket.open(asio::ip::udp::v4());
 
         src::on_interrupt([&](int signal)
         {
