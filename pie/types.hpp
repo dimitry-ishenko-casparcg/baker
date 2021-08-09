@@ -127,6 +127,9 @@ void leds_on(fd&, leds::color);
 // set backlight intensity
 void level(fd&, byte bank_1, byte bank_2);
 
+// set uid
+void uid(fd&, byte uid);
+
 // request descriptor data
 void request_descriptor(fd&);
 

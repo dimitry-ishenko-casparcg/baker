@@ -81,6 +81,15 @@ void level(pie::fd& fd, byte bank_1, byte bank_2)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+void uid(pie::fd& fd, byte uid)
+{
+    send data{ };
+    data[1] = 189;
+    data[2] = uid;
+    asio::write(fd, asio::buffer(data));
+}
+
+////////////////////////////////////////////////////////////////////////////////
 void request_descriptor(pie::fd& fd)
 {
     send data{ };
