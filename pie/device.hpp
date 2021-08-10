@@ -50,8 +50,8 @@ public:
     void set_group(index idx, int id) { buttons_.at(idx).group = id; }
     void set_group(index_list il, int id) { for(auto idx : il) set_group(idx, id); }
 
-    void pressed_callback(callback cb) { pcall_ = std::move(cb); }
-    void released_callback(callback cb) { rcall_ = std::move(cb); }
+    void on_press(callback cb) { pcall_ = std::move(cb); }
+    void on_release(callback cb) { rcall_ = std::move(cb); }
 
 private:
     fd fd_;
@@ -68,7 +68,7 @@ private:
 
     callback pcall_, rcall_;
 
-    recv data_ { }, prev_ { };
+    recv data_{ }, prev_{ };
     void sched_read();
 
     using indices = std::set<index>;
