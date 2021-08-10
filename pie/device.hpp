@@ -36,6 +36,8 @@ class device
 public:
     explicit device(asio::io_context&, const fs::path&);
 
+    auto uid() const { return uid_; }
+
     // mark button(s) as double-press
     void set_double_press(index idx) { buttons_.at(idx).double_press = true; }
     void set_double_press(index_list il) { for(auto idx : il) set_double_press(idx); }
@@ -53,6 +55,7 @@ public:
 
 private:
     fd fd_;
+    byte uid_;
     byte columns_, rows_;
 
     struct button

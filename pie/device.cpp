@@ -37,6 +37,7 @@ device::device(asio::io_context& io, const fs::path& path) :
     };
 
     auto dd = data.as<descriptor_data>();
+    uid_ = dd->uid;
     columns_ = dd->columns;
     rows_ = dd->rows;
     buttons_.resize(columns_ * CHAR_BIT);
