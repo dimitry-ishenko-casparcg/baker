@@ -34,7 +34,7 @@ using callback = std::function<void (index)>;
 class device
 {
 public:
-    explicit device(asio::io_context&, const fs::path&);
+    device(asio::io_context&, const fs::path&);
 
     auto uid() const { return uid_; }
 
