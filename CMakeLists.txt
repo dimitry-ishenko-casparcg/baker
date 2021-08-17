@@ -38,12 +38,17 @@ install(FILES systemd/baker@.service DESTINATION /lib/systemd/system)
 set(CPACK_STRIP_FILES ON)
 set(CPACK_GENERATOR DEB)
 
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "...")
-set(CPACK_PACKAGE_DESCRIPTION "...")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "P.I. Engineering X-Keys to OSC translator")
 set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Dimitry Ishenko <dimitry (dot) ishenko (at) (gee) mail (dot) com>")
 
 set(CPACK_DEBIAN_FILE_NAME DEB-DEFAULT)
 set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "libosc++ (>= 1.0)")
 set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
+
+# source
+set(CPACK_SOURCE_GENERATOR TBZ2)
+set(CPACK_SOURCE_PACKAGE_FILE_NAME ${PROJECT_NAME}-${PROJECT_VERSION})
+set(CPACK_SOURCE_IGNORE_FILES /\.git.*;/build.*;\.user$;/\.vscode.*)
 
 include(CPack)
