@@ -6,13 +6,15 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 #include "pgm/args.hpp"
-#include "pie/device.hpp"
+#include "src/remote.hpp"
 #include "util.hpp"
 
 #include <asio.hpp>
 #include <exception>
 #include <filesystem>
 #include <iostream>
+#include <osc++.hpp>
+#include <string>
 
 namespace fs = std::filesystem;
 
@@ -92,6 +94,32 @@ try
         asio::io_context io;
         asio::ip::udp::socket socket{ io };
         socket.open(asio::ip::udp::v4());
+
+        src::remote remote{ io, path };
+        std::cout << "Device info: uid=" << static_cast<int>(remote.uid()) << ", path=" << path << std::endl;
+
+        auto conf_path = fs::path{ args["--conf-dir"].value_or(def_conf) } / (std::to_string(remote.uid()) + ".conf");
+        if(fs::exists(conf_path)) remote.conf_from(conf_path);
+
+        auto address = "/remote/pie/" + std::to_string(remote.uid());
+
+        remote.on_press([&](pie::index idx)
+        {
+            osc::message msg{ address + "/press" };
+            msg << idx;
+
+            auto packet = msg.to_packet();
+            socket.send_to(asio::buffer(packet.data(), packet.size()), ep);
+        });
+
+        remote.on_release([&](pie::index idx)
+        {
+            osc::message msg{ address + "/release" };
+            msg << idx;
+
+            auto packet = msg.to_packet();
+            socket.send_to(asio::buffer(packet.data(), packet.size()), ep);
+        });
 
         src::on_interrupt([&](int signal)
         {
