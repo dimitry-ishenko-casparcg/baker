@@ -13,6 +13,8 @@
 
 #include <asio.hpp>
 #include <filesystem>
+#include <stdexcept>
+#include <string>
 
 namespace fs = std::filesystem;
 
@@ -21,16 +23,19 @@ namespace src
 {
 
 ////////////////////////////////////////////////////////////////////////////////
-class remote : private pie::device
+class remote : public pie::device
 {
 public:
     using pie::device::device;
-
-    using pie::device::uid;
     void conf_from(const fs::path&);
+};
 
-    using pie::device::on_press;
-    using pie::device::on_release;
+////////////////////////////////////////////////////////////////////////////////
+struct invalid_line : public std::invalid_argument
+{
+    invalid_line(int n, const std::string& msg) :
+        std::invalid_argument{ msg + " on line " + std::to_string(n) + "." }
+    { }
 };
 
 ////////////////////////////////////////////////////////////////////////////////
