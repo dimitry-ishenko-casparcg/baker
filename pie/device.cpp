@@ -145,7 +145,7 @@ void device::read_data(const asio::error_code& ec, std::size_t n)
     }
 
     for(auto idx : released)
-        if(idx != pressed_once_)
+        if(pressed_.count(idx))
         {
             auto& btn = buttons_[idx];
             // toggle and group buttons are released separately
