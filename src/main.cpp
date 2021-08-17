@@ -45,20 +45,22 @@ auto to_port(const std::string& s)
 int main(int argc, char* argv[])
 try
 {
-    auto name{ fs::path(argv[0]).filename() };
+    auto name = fs::path{ argv[0] }.filename();
 
     std::string def_address = "127.0.0.1";
     std::string def_port = "6260";
+    auto def_conf = "/etc" / name;
 
     pgm::args args
     {
-        { "-a", "--address", "addr", "Specify OSC server IP address to send messages to.\n"
-                                     "Default: " + def_address + "."    },
-        { "-p", "--port", "N",       "Specify OSC server port number. Default: " + def_port + "." },
-        { "-h", "--help",            "Print this help screen and exit." },
-        { "-v", "--version",         "Show version number and exit."    },
+        { "-a", "--address", "addr",  "Specify OSC server IP address to send messages to.\n"
+                                      "Default: " + def_address + "."    },
+        { "-p", "--port", "N",        "Specify OSC server port number. Default: " + def_port + "." },
+        { "-c", "--conf-dir", "path", "Specify path to configuration directory. Default: " + def_conf.string() + "." },
+        { "-h", "--help",             "Print this help screen and exit." },
+        { "-v", "--version",          "Show version number and exit."    },
 
-        { "path",                    "Path to an X-Keys device."        },
+        { "path",                     "Path to an X-Keys device."        },
     };
 
     // delay exception handling to process --help and --version
@@ -80,7 +82,7 @@ try
     }
     else
     {
-        fs::path path{ args["path"].value() };
+        auto path = fs::path{ args["path"].value() };
 
         asio::ip::udp::endpoint ep{
             to_address(args["--address"].value_or(def_address)),
