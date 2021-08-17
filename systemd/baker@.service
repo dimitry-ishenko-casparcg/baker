@@ -1,0 +1,8 @@
+[Unit]
+Description=P.I. Engineering X-Keys on %I
+
+[Service]
+Environment="args="
+ExecStart=/usr/bin/baker $args %I
+StandardOutput=journal
+StandardError=journal

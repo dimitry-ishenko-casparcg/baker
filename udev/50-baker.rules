@@ -1,0 +1,39 @@
+# XK-4
+ACTION=="add", SUBSYSTEM=="hidraw", ENV{DEVNAME}!="", ATTRS{bInterfaceNumber}=="00", ATTRS{idVendor}=="05f3", ATTRS{idProduct}=="0467", TAG+="systemd", ENV{SYSTEMD_WANTS}="baker@$env{DEVNAME}.service"
+ACTION=="add", SUBSYSTEM=="hidraw", ENV{DEVNAME}!="", ATTRS{bInterfaceNumber}=="00", ATTRS{idVendor}=="05f3", ATTRS{idProduct}=="0469", TAG+="systemd", ENV{SYSTEMD_WANTS}="baker@$env{DEVNAME}.service"
+
+# XK-8
+ACTION=="add", SUBSYSTEM=="hidraw", ENV{DEVNAME}!="", ATTRS{bInterfaceNumber}=="00", ATTRS{idVendor}=="05f3", ATTRS{idProduct}=="046a", TAG+="systemd", ENV{SYSTEMD_WANTS}="baker@$env{DEVNAME}.service"
+ACTION=="add", SUBSYSTEM=="hidraw", ENV{DEVNAME}!="", ATTRS{bInterfaceNumber}=="00", ATTRS{idVendor}=="05f3", ATTRS{idProduct}=="046c", TAG+="systemd", ENV{SYSTEMD_WANTS}="baker@$env{DEVNAME}.service"
+
+# XK-12 Jog & Shuttle
+ACTION=="add", SUBSYSTEM=="hidraw", ENV{DEVNAME}!="", ATTRS{bInterfaceNumber}=="00", ATTRS{idVendor}=="05f3", ATTRS{idProduct}=="0426", TAG+="systemd", ENV{SYSTEMD_WANTS}="baker@$env{DEVNAME}.service"
+ACTION=="add", SUBSYSTEM=="hidraw", ENV{DEVNAME}!="", ATTRS{bInterfaceNumber}=="00", ATTRS{idVendor}=="05f3", ATTRS{idProduct}=="0428", TAG+="systemd", ENV{SYSTEMD_WANTS}="baker@$env{DEVNAME}.service"
+
+# XK-16
+ACTION=="add", SUBSYSTEM=="hidraw", ENV{DEVNAME}!="", ATTRS{bInterfaceNumber}=="00", ATTRS{idVendor}=="05f3", ATTRS{idProduct}=="0419", TAG+="systemd", ENV{SYSTEMD_WANTS}="baker@$env{DEVNAME}.service"
+ACTION=="add", SUBSYSTEM=="hidraw", ENV{DEVNAME}!="", ATTRS{bInterfaceNumber}=="00", ATTRS{idVendor}=="05f3", ATTRS{idProduct}=="041b", TAG+="systemd", ENV{SYSTEMD_WANTS}="baker@$env{DEVNAME}.service"
+
+# XK-24
+ACTION=="add", SUBSYSTEM=="hidraw", ENV{DEVNAME}!="", ATTRS{bInterfaceNumber}=="00", ATTRS{idVendor}=="05f3", ATTRS{idProduct}=="0403", TAG+="systemd", ENV{SYSTEMD_WANTS}="baker@$env{DEVNAME}.service"
+ACTION=="add", SUBSYSTEM=="hidraw", ENV{DEVNAME}!="", ATTRS{bInterfaceNumber}=="00", ATTRS{idVendor}=="05f3", ATTRS{idProduct}=="0405", TAG+="systemd", ENV{SYSTEMD_WANTS}="baker@$env{DEVNAME}.service"
+
+# XKR-32
+ACTION=="add", SUBSYSTEM=="hidraw", ENV{DEVNAME}!="", ATTRS{bInterfaceNumber}=="00", ATTRS{idVendor}=="05f3", ATTRS{idProduct}=="04ff", TAG+="systemd", ENV{SYSTEMD_WANTS}="baker@$env{DEVNAME}.service"
+ACTION=="add", SUBSYSTEM=="hidraw", ENV{DEVNAME}!="", ATTRS{bInterfaceNumber}=="00", ATTRS{idVendor}=="05f3", ATTRS{idProduct}=="0502", TAG+="systemd", ENV{SYSTEMD_WANTS}="baker@$env{DEVNAME}.service"
+
+# XK-60
+ACTION=="add", SUBSYSTEM=="hidraw", ENV{DEVNAME}!="", ATTRS{bInterfaceNumber}=="00", ATTRS{idVendor}=="05f3", ATTRS{idProduct}=="0461", TAG+="systemd", ENV{SYSTEMD_WANTS}="baker@$env{DEVNAME}.service"
+ACTION=="add", SUBSYSTEM=="hidraw", ENV{DEVNAME}!="", ATTRS{bInterfaceNumber}=="00", ATTRS{idVendor}=="05f3", ATTRS{idProduct}=="0463", TAG+="systemd", ENV{SYSTEMD_WANTS}="baker@$env{DEVNAME}.service"
+
+# XK-68 Jog & Shuttle
+ACTION=="add", SUBSYSTEM=="hidraw", ENV{DEVNAME}!="", ATTRS{bInterfaceNumber}=="00", ATTRS{idVendor}=="05f3", ATTRS{idProduct}=="045a", TAG+="systemd", ENV{SYSTEMD_WANTS}="baker@$env{DEVNAME}.service"
+ACTION=="add", SUBSYSTEM=="hidraw", ENV{DEVNAME}!="", ATTRS{bInterfaceNumber}=="00", ATTRS{idVendor}=="05f3", ATTRS{idProduct}=="045c", TAG+="systemd", ENV{SYSTEMD_WANTS}="baker@$env{DEVNAME}.service"
+
+# XK-80
+ACTION=="add", SUBSYSTEM=="hidraw", ENV{DEVNAME}!="", ATTRS{bInterfaceNumber}=="00", ATTRS{idVendor}=="05f3", ATTRS{idProduct}=="0441", TAG+="systemd", ENV{SYSTEMD_WANTS}="baker@$env{DEVNAME}.service"
+ACTION=="add", SUBSYSTEM=="hidraw", ENV{DEVNAME}!="", ATTRS{bInterfaceNumber}=="00", ATTRS{idVendor}=="05f3", ATTRS{idProduct}=="0443", TAG+="systemd", ENV{SYSTEMD_WANTS}="baker@$env{DEVNAME}.service"
+
+# XKE-128
+ACTION=="add", SUBSYSTEM=="hidraw", ENV{DEVNAME}!="", ATTRS{bInterfaceNumber}=="00", ATTRS{idVendor}=="05f3", ATTRS{idProduct}=="04cb", TAG+="systemd", ENV{SYSTEMD_WANTS}="baker@$env{DEVNAME}.service"
+ACTION=="add", SUBSYSTEM=="hidraw", ENV{DEVNAME}!="", ATTRS{bInterfaceNumber}=="00", ATTRS{idVendor}=="05f3", ATTRS{idProduct}=="04ce", TAG+="systemd", ENV{SYSTEMD_WANTS}="baker@$env{DEVNAME}.service"

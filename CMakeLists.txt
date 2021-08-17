@@ -29,6 +29,10 @@ target_link_libraries(${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT} osc++)
 
 install(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_BINDIR})
 
+install(FILES LICENSE.md README.md DESTINATION ${CMAKE_INSTALL_DOCDIR})
+install(FILES udev/50-baker.rules DESTINATION /lib/udev/rules.d)
+install(FILES systemd/baker@.service DESTINATION /lib/systemd/system)
+
 ########################
 # package
 set(CPACK_STRIP_FILES ON)
