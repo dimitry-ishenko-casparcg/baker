@@ -40,15 +40,21 @@ public:
 
     // mark button(s) as double-press
     void set_double_press(index idx) { buttons_.at(idx).double_press = true; }
-    void set_double_press(index_list il) { for(auto idx : il) set_double_press(idx); }
+    template<typename It>
+    void set_double_press(It begin, It end) { for(auto it = begin; it != end; ++it) set_double_press(*it); }
+    void set_double_press(index_list il) { set_double_press(il.begin(), il.end()); }
 
     // mark button(s) as toggle
     void set_toggle(index idx) { buttons_.at(idx).toggle = true; }
-    void set_toggle(index_list il) { for(auto idx : il) set_toggle(idx); }
+    template<typename It>
+    void set_toggle(It begin, It end) { for(auto it = begin; it != end; ++it) set_toggle(*it); }
+    void set_toggle(index_list il) { set_toggle(il.begin(), il.end()); }
 
     // add button(s) to a group
     void set_group(index idx, int id) { buttons_.at(idx).group = id; }
-    void set_group(index_list il, int id) { for(auto idx : il) set_group(idx, id); }
+    template<typename It>
+    void set_group(It begin, It end, int id) { for(auto it = begin; it != end; ++it) set_group(*it, id); }
+    void set_group(index_list il, int id) { set_group(il.begin(), il.end(), id); }
 
     void on_press(callback cb) { pcall_ = std::move(cb); }
     void on_release(callback cb) { rcall_ = std::move(cb); }
