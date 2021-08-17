@@ -37,6 +37,9 @@ public:
     device(asio::io_context&, const fs::path&);
 
     auto uid() const { return uid_; }
+    auto columns() const { return columns_; }
+    auto rows() const { return rows_; }
+    auto buttons() const { return buttons_.size(); }
 
     // mark button(s) as double-press
     void set_double_press(index idx) { buttons_.at(idx).double_press = true; }
