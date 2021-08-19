@@ -55,6 +55,13 @@ device::device(asio::io_context& io, const fs::path& path) :
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+void device::set_uid(byte new_uid)
+{
+    pie::uid(fd_, new_uid);
+    uid_ = new_uid;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 void device::sched_read()
 {
     using namespace std::placeholders;

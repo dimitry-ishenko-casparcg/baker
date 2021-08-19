@@ -36,7 +36,9 @@ class device
 public:
     device(asio::io_context&, const fs::path&);
 
+    void set_uid(byte);
     auto uid() const { return uid_; }
+
     auto columns() const { return columns_; }
     auto rows() const { return rows_; }
     auto buttons() const { return buttons_.size(); }
