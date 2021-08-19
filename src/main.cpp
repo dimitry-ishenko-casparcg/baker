@@ -54,7 +54,7 @@ try
     auto def_conf = "/etc" / name;
 
     pgm::args args
-    {
+    {{
         { "-a", "--address", "addr",  "Specify OSC server IP address to send messages to.\n"
                                       "Default: " + def_address + "."    },
         { "-p", "--port", "N",        "Specify OSC server port number. Default: " + def_port + "." },
@@ -63,7 +63,7 @@ try
         { "-v", "--version",          "Show version number and exit."    },
 
         { "path",                     "Path to an X-Keys device."        },
-    };
+    }};
 
     // delay exception handling to process --help and --version
     std::exception_ptr ep;

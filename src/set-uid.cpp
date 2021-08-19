@@ -25,13 +25,13 @@ try
     auto name = fs::path{ argv[0] }.filename();
 
     pgm::args args
-    {
+    {{
         { "-s", "--set-to", "uid", "Change unit ID to <uid>."         },
         { "-h", "--help",          "Print this help screen and exit." },
         { "-v", "--version",       "Show version number and exit."    },
 
         { "path",                  "Path to an X-Keys device."        },
-    };
+    }};
 
     // delay exception handling to process --help and --version
     std::exception_ptr ep;
