@@ -68,7 +68,7 @@ void remote::conf_from(const fs::path& path)
         if(cmd == "double-press")
             call = [=](int idx) { set_double_press(idx); };
 
-        else if (cmd == "toggle")
+        else if(cmd == "toggle")
             call = [=](int idx) { set_toggle(idx); };
 
         else if(cmd == "group")
