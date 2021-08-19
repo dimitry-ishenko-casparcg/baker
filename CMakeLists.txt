@@ -20,14 +20,24 @@ set(SOURCES
     src/util.cpp    src/util.hpp
 )
 
+set(SET_UID_SOURCES
+    pgm/args.cpp    pgm/args.hpp
+    pie/device.cpp  pie/device.hpp
+    pie/types.cpp   pie/types.hpp
+    src/set-uid.cpp
+)
+
 include(GNUInstallDirs)
 
 ########################
 # executable
-add_executable(${PROJECT_NAME} ${HEADERS} ${SOURCES})
+add_executable(${PROJECT_NAME} ${SOURCES})
 target_link_libraries(${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT} osc++)
 
-install(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_BINDIR})
+add_executable(set-uid ${SET_UID_SOURCES})
+target_link_libraries(set-uid ${CMAKE_THREAD_LIBS_INIT})
+
+install(TARGETS ${PROJECT_NAME} set-uid DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 install(FILES LICENSE.md README.md DESTINATION ${CMAKE_INSTALL_DOCDIR})
 install(FILES udev/50-baker.rules DESTINATION /lib/udev/rules.d)
