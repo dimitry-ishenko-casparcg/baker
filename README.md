@@ -11,6 +11,8 @@ Each keypad has a unit ID (uid) associated with it, which is factory preset to
 `0`. The uid can be changed and is used to distinguish between different
 keypads, as well as to configure buttons for each one.
 
+> NB: You can use the `set-uid` program to change keypad's uid.
+
 Button configuration files are located in the `/etc/baker` directory (can be
 overriden with `--conf-dir`) and are named after the keypad uid followed by the
 `.conf` extension. In other words, to configure keypad with uid `0` – create a
