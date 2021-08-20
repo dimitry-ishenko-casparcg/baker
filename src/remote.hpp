@@ -26,8 +26,15 @@ namespace src
 class remote : public pie::device
 {
 public:
-    using pie::device::device;
+    remote(asio::io_context&, fs::path);
+
     void conf_from(const fs::path&);
+
+private:
+    fs::path path_;
+    asio::steady_timer timer_;
+
+    void sched_check();
 };
 
 ////////////////////////////////////////////////////////////////////////////////

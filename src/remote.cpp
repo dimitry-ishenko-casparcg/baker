@@ -10,12 +10,11 @@
 #include <functional>
 #include <fstream>
 #include <iomanip>
+#include <iostream>
 #include <sstream>
 #include <vector>
 
-using namespace std::placeholders;
-using std::begin;
-using std::end;
+using namespace std::chrono_literals;
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace src
@@ -46,6 +45,14 @@ bool parse_equal_sign(std::stringstream& ss)
     return c == '=';
 }
 
+}
+
+////////////////////////////////////////////////////////////////////////////////
+remote::remote(asio::io_context& io, fs::path path) : pie::device{ io, path },
+    path_{ std::move(path) }, timer_{ io }
+{
+    std::cout << "Opened device " << path_ << "." << std::endl;
+    sched_check();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -89,6 +96,23 @@ void remote::conf_from(const fs::path& path)
             else throw invalid_line{ n, "Invalid button index" };
         }
     }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void remote::sched_check()
+{
+    timer_.expires_from_now(1000ms);
+    timer_.async_wait([&](const asio::error_code& ec)
+    {
+        if(ec) return;
+
+        if(!fs::exists(path_))
+        {
+            std::cout << "Device " << path_ << " no longer exists." << std::endl;
+            std::raise(SIGTERM);
+        }
+        else sched_check();
+    });
 }
 
 ////////////////////////////////////////////////////////////////////////////////
