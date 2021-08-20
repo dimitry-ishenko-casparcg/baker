@@ -40,6 +40,7 @@ target_link_libraries(set-uid ${CMAKE_THREAD_LIBS_INIT})
 install(TARGETS ${PROJECT_NAME} set-uid DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 install(FILES LICENSE.md README.md DESTINATION ${CMAKE_INSTALL_DOCDIR})
+install(FILES etc/sample.conf DESTINATION /etc/${PROJECT_NAME})
 install(FILES udev/50-baker.rules DESTINATION /lib/udev/rules.d)
 install(FILES systemd/baker@.service DESTINATION /lib/systemd/system)
 
