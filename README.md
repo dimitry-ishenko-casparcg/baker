@@ -52,8 +52,8 @@ On each `press` and `release` event **baker** sends one of the following OSC
 messages:
 
 ```
-/remote/pie/<uid>/press <button>
-/remote/pie/<uid>/release <button>
+/remote/pie/<uid>/<button>/press <remote> <button> "press"
+/remote/pie/<uid>/<button>/release <remote> <button> "release"
 ```
 
 By default, **baker** sends messages to an OSC server on IP address `127.0.0.1`
