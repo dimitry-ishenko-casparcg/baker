@@ -101,12 +101,12 @@ try
         auto conf_path = fs::path{ args["--conf-dir"].value_or(def_conf) } / (std::to_string(remote.uid()) + ".conf");
         if(fs::exists(conf_path)) remote.conf_from(conf_path);
 
-        auto address = "/remote/pie/" + std::to_string(remote.uid());
+        auto prefix = "/remote/pie/" + std::to_string(remote.uid()) + "/";
 
         remote.on_press([&](pie::index idx)
         {
-            osc::message msg{ address + "/press" };
-            msg << idx;
+            osc::message msg{ prefix + std::to_string(idx) + "/press" };
+            msg << remote.uid() << idx << "press";
 
             auto packet = msg.to_packet();
             socket.send_to(asio::buffer(packet.data(), packet.size()), ep);
@@ -114,8 +114,8 @@ try
 
         remote.on_release([&](pie::index idx)
         {
-            osc::message msg{ address + "/release" };
-            msg << idx;
+            osc::message msg{ prefix + std::to_string(idx) + "/release" };
+            msg << remote.uid() << idx << "release";
 
             auto packet = msg.to_packet();
             socket.send_to(asio::buffer(packet.data(), packet.size()), ep);
